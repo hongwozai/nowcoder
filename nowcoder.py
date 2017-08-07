@@ -20,6 +20,10 @@ sys.setdefaultencoding('utf-8')
 nowcoderUrl = "https://www.nowcoder.com"
 userAgent = "Mozilla/5.0 (X11; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0"
 
+nowcoderLang = {"c": 2,
+                "java": 4,
+                "python": 5}
+
 
 def initCookie():
 
@@ -144,7 +148,7 @@ class SwordOffer(object):
         self.tpId = tpId
         return (content, example, tpId)
 
-    def postContentAndResult(self, content, tpId=None):
+    def postContentAndResult(self, content, tpId=None, lang=2):
         # 提交的id
         submissionId = 0
         if tpId is None:
@@ -152,7 +156,7 @@ class SwordOffer(object):
 
         s = urllib.urlencode([("questionId", tpId),
                               ("content", content),
-                              ("language", 2)])
+                              ("language", lang)])
         req = urllib2.Request("%s/submit_cd?stoken=" % (nowcoderUrl),
                               headers={"User-Agent": userAgent},
                               data=s)
@@ -197,6 +201,8 @@ if __name__ == '__main__':
     p.add_argument("-g", "--get",  help="get problem", type=int)
     p.add_argument("-p", "--put",  help="put file to test", type=str)
     p.add_argument("-pi", "--putid",  help="put id", type=int)
+    p.add_argument("-l", "--language",  help="use language", type=str,
+                   default="c", choices=["c", "java", "python"])
     arg = p.parse_args()
 
     if len(sys.argv) == 1:
@@ -221,7 +227,7 @@ if __name__ == '__main__':
         if arg.input is None:
             print "Usage: -i <file> -g <number>"
             sys.exit(-1)
-        content, example, tpId = so.getContent(arg.get, "c")
+        content, example, tpId = so.getContent(arg.get, arg.language)
         if content is None:
             sys.stderr.write("[-] content fetch error!\n")
             sys.exit(-1)
@@ -235,5 +241,5 @@ if __name__ == '__main__':
     if arg.put is not None and arg.putid is not None:
         so = SwordOffer(arg.input)
         with open(arg.put, "r") as f:
-            so.postContentAndResult(f.read(), arg.putid)
+            so.postContentAndResult(f.read(), arg.putid, nowcoderLang[arg.language])
         print
