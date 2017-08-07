@@ -130,7 +130,10 @@ class SwordOffer(object):
         bs = bs4.BeautifulSoup(res.read(), "html5lib")
 
         # 获取题目内容
-        content = bs.find(class_="subject-describe").contents[1].string
+        content = ""
+        for i in bs.find(class_="subject-describe").strings:
+            content += i
+        # content = bs.find(class_="subject-describe").contents[1].string
         # 获取示例代码
         example = bs.find("textarea", id="{}Tpl".format(lang)).string
         # 获取试题代号
