@@ -1,8 +1,8 @@
 ;;; 用于记录tpid, buffer-local变量
 (defvar nowcoder-problem-tpid "0")
 (defvar nowcoder-fail-buffer-name "*nowcoder-test-fail*")
-(defvar nowcoder-python-program
-  (expand-file-name "./nowcoder.py"))
+(defvar nowcoder-python-program-path "/opt/nowcoder/")
+(defvar nowcoder-python-program "nowcoder.py")
 (defvar nowcoder-lang "python")
 
 ;;; 传代码拉结果
@@ -37,7 +37,10 @@
             ((string= "java" nowcoder-lang) (java-mode)))
       (call-process-shell-command
        (format "%s -g %d -i %s -l %s"
-               nowcoder-python-program order name nowcoder-lang)
+               nowcoder-python-program
+               order
+               (concat nowcoder-python-program-path name)
+               nowcoder-lang)
        nil buf)
       ;; tpid获取
       (goto-char (point-min))
