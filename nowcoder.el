@@ -26,6 +26,24 @@
           )))
   )
 
+;;; 独立的拉取结果函数
+(defun nowcoder-test (tpId)
+  (let ((tempfile (make-temp-file "nowcoder")))
+    (write-region (point-min) (point-max) tempfile)
+    (let ((failbuf (get-buffer-create nowcoder-fail-buffer-name)))
+      (with-current-buffer nowcoder-fail-buffer-name
+        (let ((inhibit-read-only t)) (erase-buffer)))
+      (async-shell-command
+       (format "%s -pi %s -p %s -l %s"
+               nowcoder-python-program
+               tpId
+               tempfile
+               nowcoder-lang)
+       failbuf)
+      (pop-to-buffer nowcoder-fail-buffer-name)
+      ))
+  )
+
 ;;; 拉题目
 (defun nowcoder-fetch-problem (name order)
   (let ((buf (get-buffer-create (format "%s-%d" name order))))
